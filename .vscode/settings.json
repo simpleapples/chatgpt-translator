@@ -1,0 +1,47 @@
+{
+  "files.associations": {
+    ".eslintrc": "jsonc",
+    ".prettierrc": "jsonc",
+    ".eslintignore": "ignore"
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "html",
+    "typescriptreact"
+  ],
+  "javascript.validate.enable": false,
+  "javascript.format.enable": false,
+  "typescript.format.enable": false,
+  "search.exclude": {
+    ".git": true,
+    ".eslintcache": true,
+    ".erb/dll": true,
+    "release/{build,app/dist}": true,
+    "node_modules": true,
+    "npm-debug.log.*": true,
+    "test/**/__snapshots__": true,
+    "package-lock.json": true,
+    "*.{css,sass,scss}.d.ts": true
+  },
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#a1b7d2",
+    "activityBar.background": "#a1b7d2",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#ac537b",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#a1b7d2",
+    "statusBar.background": "#7f9cc1",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#5d81b0",
+    "statusBarItem.remoteBackground": "#7f9cc1",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#7f9cc1",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#7f9cc199",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.color": "#7f9cc1"
+}
