@@ -4,9 +4,9 @@ GPT-Translator is an open-source project that allows you to translate text using
 
 ## Screenshot
 
-![GPT Translator](https://raw.github.com/simpleapples/gpt-translator/master/docs/chatgpt_screenshot.png)
+![GPT Translator](https://github.com/simpleapples/gpt-translator/blob/master/docs/chatgpt_screenshot.png)
 
-![Compare to DeepL](https://raw.github.com/simpleapples/gpt-translator/master/docs/chatgpt_screenshot.png)
+![Compare to DeepL](https://github.com/simpleapples/gpt-translator/blob/master/docs/deepl_screenshot.png)
 
 ## Installation
 
