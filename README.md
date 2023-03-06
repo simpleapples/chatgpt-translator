@@ -2,6 +2,12 @@
 
 GPT-Translator is an open-source project that allows you to translate text using GPT language model.
 
+## Screenshot
+
+![GPT Translator](https://raw.github.com/simpleapples/gpt-translator/master/docs/chatgpt_screenshot.png)
+
+![Compare to DeepL](https://raw.github.com/simpleapples/gpt-translator/master/docs/chatgpt_screenshot.png)
+
 ## Installation
 
 1. Clone the repository to your local machine.
