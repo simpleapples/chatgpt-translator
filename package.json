@@ -7,19 +7,19 @@
         "hot",
         "ChatGPT"
     ],
-    "homepage": "https://github.com/simpleapples/gpt-translator#readme",
+    "homepage": "https://github.com/simpleapples/chatgpt-translator#readme",
     "bugs": {
-        "url": "https://github.com/simpleapples/gpt-translator/issues"
+        "url": "https://github.com/simpleapples/chatgpt-translator/issues"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/simpleapples/gpt-translator.git"
+        "url": "git+https://github.com/simpleapples/chatgpt-translator.git"
     },
     "license": "MIT",
     "author": {
         "name": "simpleapples",
         "email": "zangzhiya@gmail.com",
-        "url": "https://github.com/simpleapples/gpt-translator"
+        "url": "https://github.com/simpleapples/chatgpt-translator"
     },
     "contributors": [
         {
@@ -172,7 +172,7 @@
         "webpack-merge": "^5.8.0"
     },
     "build": {
-        "productName": "GPTTranslator",
+        "productName": "ChatGPT Translator",
         "appId": "com.simpleapples.gpttranslator",
         "asar": true,
         "asarUnpack": "**\\*.{node,dll}",
@@ -232,7 +232,7 @@
         "publish": {
             "provider": "github",
             "owner": "simpleapples",
-            "repo": "gpt-translator"
+            "repo": "chatgpt-translator"
         }
     },
     "devEngines": {

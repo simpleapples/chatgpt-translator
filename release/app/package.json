@@ -1,12 +1,12 @@
 {
-  "name": "GPTTranslator",
+  "name": "ChatGPTTranslator",
   "version": "1.0.0",
   "description": "A translation app based on ChatGPT",
   "license": "MIT",
   "author": {
     "name": "simpleapples",
     "email": "zangzhiya@gmail.com",
-    "url": "https://github.com/simpleapples/gpt-translator"
+    "url": "https://github.com/simpleapples/chatgpt-translator"
   },
   "main": "./dist/main/main.js",
   "scripts": {

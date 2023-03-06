@@ -26,7 +26,7 @@ const targetLanguageList = ['English', 'Chinese'];
 
 function Main() {
     let executionTimeout = window.setTimeout(() => {}, 100);
-    const [textHeight, setTextHeight] = useState(window.innerHeight);
+    const [textHeight, setTextHeight] = useState(window.innerHeight - 150);
     const [translatedContent, setTranslatedContent] = useState<string>();
     const [showSettings, setShowSettings] = useState(false);
     const [sourceLanguage, setSourceLanguage] = useState<string>();
