@@ -20,13 +20,12 @@ import {
 } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
-const Store = require('electron-store');
 const { globalShortcut } = require('electron');
+const Store = require('electron-store');
 
-const store = new Store('settings');
+const store = new Store({ shortcut: 'alt+q' });
 
 class AppUpdater {
     constructor() {
@@ -37,9 +36,9 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
-let tray = null;
+let tray: Tray | null = null;
 
-function generatePayload(prompt, content) {
+function generatePayload(prompt: string, content: string) {
     const apiKey = store.get('api_key');
     return {
         headers: {
@@ -56,33 +55,59 @@ function generatePayload(prompt, content) {
                     content,
                 },
             ],
-            temperature: 0.6,
+            temperature: 0,
+            max_tokens: 1000,
+            top_p: 1,
+            frequency_penalty: 1,
+            presence_penalty: 1,
         }),
     };
 }
 
 ipcMain.on('translate', async (event, arg) => {
     const payload = generatePayload(
-        `translate from ${arg[1]} to ${arg[2]}`,
+        `just translate sentences or words from ${arg[1]} to ${arg[2]}`,
         arg[0]
     );
+    console.log(payload);
+
+    let status = '';
+    let message = '';
     const response = (await fetch(
         'https://api.openai.com/v1/chat/completions',
         payload
-    )) as Response;
+    ).catch(() => {
+        message = 'Network error';
+        status = 'network_error';
+        event.reply('translate', [status, message]);
+    })) as Response;
+    response
+        .text()
+        .then((res) => {
+            const respJSON = JSON.parse(res);
+            console.log(respJSON);
 
-    response.text().then((res) => {
-        const respJSON = JSON.parse(res);
-        event.reply('translate', respJSON.choices[0].message.content);
-    });
+            try {
+                console.log(respJSON.choices[0].message);
+                message = respJSON.choices[0].message.content;
+                status = 'success';
+            } catch (e) {
+                message = respJSON.error.message;
+                if (!store.get('api_key')) {
+                    status = 'need_api_key';
+                } else {
+                    status = 'error';
+                }
+            }
+            event.reply('translate', [status, message]);
+        })
+        .catch(() => null);
 });
 
 ipcMain.on('settings', async (event, arg) => {
     if (arg[0] === 'get') {
-        const res = [];
-        arg[1].map((item) => {
-            res.push(store.get(item));
-        });
+        const res: any[] = [];
+        arg[1].map((item: any) => res.push(store.get(item)));
         event.reply('settings', res);
     } else if (arg[0] === 'set') {
         if (arg[1][1] !== undefined) {
@@ -123,21 +148,46 @@ const getAssetPath = (...paths: string[]): string => {
     return path.join(RESOURCES_PATH, ...paths);
 };
 
+function createTray() {
+    const icon = getAssetPath('icon.png'); // required.
+    const trayicon = nativeImage.createFromPath(icon);
+    tray = new Tray(trayicon.resize({ width: 16 }));
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: '显示窗口 | Show',
+            click: () => {
+                mainWindow?.show();
+            },
+        },
+        {
+            label: '退出 | Quit',
+            click: () => {
+                mainWindow?.removeAllListeners();
+                app.quit();
+            },
+        },
+    ]);
+
+    tray.setContextMenu(contextMenu);
+}
+
 const createWindow = async () => {
     if (isDebug) {
         await installExtensions();
     }
 
     if (!tray) {
-        // if tray hasn't been created already.
         createTray();
     }
+    const defaultW = 1024;
+    const defaultH = 800;
     mainWindow = new BrowserWindow({
         show: false,
-        width: 1024,
-        height: 728,
+        width: defaultW,
+        height: defaultH,
         icon: getAssetPath('icon.png'),
         skipTaskbar: true,
+        autoHideMenuBar: true,
         webPreferences: {
             preload: app.isPackaged
                 ? path.join(__dirname, 'preload.js')
@@ -158,19 +208,18 @@ const createWindow = async () => {
         }
     });
 
+    mainWindow.on('dom-ready', () => {
+        mainWindow?.setSize(defaultW, defaultH);
+    });
+
     mainWindow.on('close', (event) => {
         event.preventDefault();
         mainWindow?.minimize();
-        // app..hide();
     });
 
-    const menuBuilder = new MenuBuilder(mainWindow);
-    menuBuilder.buildMenu();
-
-    // Open urls in the user's browser
-    mainWindow.webContents.setWindowOpenHandler((edata) => {
-        shell.openExternal(edata.url);
-        return { action: 'deny' };
+    mainWindow.webContents.on('will-navigate', (e, url) => {
+        e.preventDefault();
+        shell.openExternal(url);
     });
 
     // Remove this if your app does not use auto updates
@@ -178,49 +227,14 @@ const createWindow = async () => {
     new AppUpdater();
 };
 
-function createTray() {
-    const icon = getAssetPath('icon.png'); // required.
-    const trayicon = nativeImage.createFromPath(icon);
-    tray = new Tray(trayicon.resize({ width: 16 }));
-    const contextMenu = Menu.buildFromTemplate([
-        {
-            label: 'Show',
-            click: () => {
-                mainWindow?.show();
-            },
-        },
-        {
-            label: 'Quit',
-            click: () => {
-                app.quit(); // actually quit the app.
-            },
-        },
-    ]);
-
-    tray.setContextMenu(contextMenu);
-}
-
 /**
  * Add event listeners...
  */
-app.on('window-all-closed', (event) => {
-    // Respect the OSX convention of having the application in memory even
-    // after all windows have been closed
-    // if (process.platform !== 'darwin') {
-    //     app.quit();
-    // }
-});
-
 app.whenReady()
     .then(() => {
         try {
             const shortcut = store.get('shortcut');
             globalShortcut.register(shortcut, () => {
-                console.log(
-                    '---------global shortcut',
-                    mainWindow == null,
-                    mainWindow?.isHiddenInMissionControl
-                );
                 if (!mainWindow) {
                     createWindow();
                 } else if (mainWindow.isMinimized()) {
@@ -229,7 +243,9 @@ app.whenReady()
                     mainWindow.close();
                 }
             });
-        } catch (e) {}
+        } catch (e) {
+            // Ignore
+        }
         createWindow();
         app.on('activate', () => {
             // On macOS it's common to re-create a window in the app when the

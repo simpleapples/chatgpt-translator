@@ -1,5 +1,5 @@
 import '@arco-design/web-react/dist/css/arco.css';
-import { IconSwap, IconSettings } from '@arco-design/web-react/icon';
+import { IconSettings } from '@arco-design/web-react/icon';
 import { useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import {
@@ -9,17 +9,17 @@ import {
     Input,
     Select,
     Typography,
-    Drawer,
-    Form,
-    Switch,
+    Spin,
+    Notification,
 } from '@arco-design/web-react';
+import { useTranslation } from 'react-i18next';
+import { Settings } from './Settings';
 
 const LanguageDetect = require('languagedetect');
 
 const { Row, Col } = Grid;
 const { Option } = Select;
 const { TextArea } = Input;
-const FormItem = Form.Item;
 
 const sourceLanguageList = ['English', 'Chinese'];
 const targetLanguageList = ['English', 'Chinese'];
@@ -27,27 +27,28 @@ const targetLanguageList = ['English', 'Chinese'];
 function Main() {
     let executionTimeout = window.setTimeout(() => {}, 100);
     const [textHeight, setTextHeight] = useState(window.innerHeight);
-    const [translatedContent, setTranslatedContent] = useState();
+    const [translatedContent, setTranslatedContent] = useState<string>();
     const [showSettings, setShowSettings] = useState(false);
-    const [sourceLanguage, setSourceLanguage] = useState();
-    const [targetLanguage, setTargetLanguage] = useState();
+    const [sourceLanguage, setSourceLanguage] = useState<string>();
+    const [targetLanguage, setTargetLanguage] = useState<string>();
+    const [loading, setLoading] = useState(false);
+    const { t } = useTranslation();
 
-    const [settingModel, setSettingModel] = useState();
-    const [settingAutoStart, setSettingAutoStart] = useState(false);
-    const [settingKey, setSettingKey] = useState();
-    const [settingShortcut, setSettingShortcut] = useState();
+    let sourceLang = '';
+    let targetLang = '';
 
     window.onresize = () => {
         setTextHeight(window.innerHeight - 150);
     };
+
     return (
-        <div
-            className="main-wrapper"
-            style={{ paddingLeft: 12, paddingRight: 12 }}
-        >
+        <div style={{ paddingLeft: 12, paddingRight: 12 }}>
             <PageHeader
-                // title="GPT Translator"
-                style={{ paddingLeft: 0, paddingRight: 0, marginRight: 0 }}
+                style={{
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    marginRight: 0,
+                }}
                 extra={
                     <Button
                         shape="circle"
@@ -57,103 +58,12 @@ function Main() {
                     />
                 }
             />
-            <Drawer
-                width={500}
-                title={<span>Settings</span>}
-                visible={showSettings}
-                footer
-                onOk={() => {
-                    setShowSettings(false);
-                }}
+            <Settings
+                showSettings={showSettings}
                 onCancel={() => {
                     setShowSettings(false);
                 }}
-                afterOpen={() => {
-                    window.electron.ipcRenderer.once('settings', (arg) => {
-                        setSettingAutoStart(arg[0]);
-                        setSettingModel(arg[1]);
-                        setSettingKey(arg[2]);
-                        setSettingShortcut(arg[3]);
-                    });
-                    window.electron.ipcRenderer.sendMessage('settings', [
-                        'get',
-                        ['auto_start', 'model', 'api_key', 'shortcut'],
-                    ]);
-                }}
-                afterClose={() => {
-                    window.electron.ipcRenderer.sendMessage('settings', [
-                        'set',
-                        ['auto_start', settingAutoStart],
-                    ]);
-                    window.electron.ipcRenderer.sendMessage('settings', [
-                        'set',
-                        ['model', settingModel],
-                    ]);
-                    window.electron.ipcRenderer.sendMessage('settings', [
-                        'set',
-                        ['api_key', settingKey],
-                    ]);
-                    window.electron.ipcRenderer.sendMessage('settings', [
-                        'set',
-                        ['shortcut', settingShortcut],
-                    ]);
-                }}
-            >
-                <Row>
-                    <Form style={{ width: 450 }} autoComplete="off">
-                        <FormItem
-                            label="Autostart"
-                            field="autostart"
-                            triggerPropName="checked"
-                            rules={[{ type: 'boolean' }]}
-                        >
-                            <Switch
-                                checked={settingAutoStart}
-                                onChange={(value) => {
-                                    setSettingAutoStart(value);
-                                }}
-                            />
-                        </FormItem>
-                        <FormItem label="Shortcut">
-                            <Input
-                                placeholder="please enter your API_KEY"
-                                value={settingShortcut}
-                                onChange={(value) => {
-                                    setSettingShortcut(value);
-                                }}
-                            />
-                        </FormItem>
-                        <FormItem label="API KEY">
-                            <Input
-                                placeholder="please enter your API_KEY"
-                                value={settingKey}
-                                onChange={(value) => {
-                                    setSettingKey(value);
-                                }}
-                            />
-                        </FormItem>
-                        <FormItem label="Model">
-                            <Select
-                                value={settingModel}
-                                options={[
-                                    {
-                                        label: 'gpt-3.5-turbo-0301',
-                                        value: 'gpt-3.5-turbo-0301',
-                                    },
-                                    {
-                                        label: 'gpt-3.5-turbo',
-                                        value: 'gpt-3.5-turbo',
-                                    },
-                                ]}
-                                allowClear
-                                onChange={(value) => {
-                                    setSettingModel(value);
-                                }}
-                            />
-                        </FormItem>
-                    </Form>
-                </Row>
-            </Drawer>
+            />
             <Typography.Paragraph
                 style={{
                     fontSize: 14,
@@ -169,16 +79,16 @@ function Main() {
                     style={{ marginBottom: 16 }}
                     gutter={[12, 12]}
                 >
-                    <Col span={12}>
+                    <Col span={11}>
                         <Typography.Paragraph
                             style={{
                                 width: 300,
                             }}
                         >
-                            Translate from:
+                            {t('main.translate_from')}
                             <Select
                                 popupVisible={false}
-                                placeholder="Auto detect"
+                                placeholder={t<string>('main.auto_detect')}
                                 style={{ width: 160 }}
                                 bordered={false}
                                 value={sourceLanguage}
@@ -194,23 +104,25 @@ function Main() {
                             </Select>
                         </Typography.Paragraph>
                     </Col>
-                    {/* <Col span={1}>
-                        <Button
-                            shape="circle"
-                            type="outline"
-                            icon={<IconSwap />}
+                    <Col span={1}>
+                        <Spin
+                            block
+                            size={22}
+                            style={{
+                                display: loading ? 'block' : 'none',
+                            }}
                         />
-                    </Col> */}
+                    </Col>
                     <Col span={12}>
                         <Typography.Paragraph
                             style={{
                                 width: 300,
                             }}
                         >
-                            Translate into:
+                            {t('main.translate_into')}
                             <Select
                                 popupVisible={false}
-                                placeholder="Auto detect"
+                                placeholder={t<string>('main.auto_detect')}
                                 style={{ width: 160 }}
                                 bordered={false}
                                 value={targetLanguage}
@@ -235,7 +147,7 @@ function Main() {
                     <Col span={12}>
                         <TextArea
                             allowClear
-                            placeholder="Input or paste your text here"
+                            placeholder={t<string>('main.input_placeholder')}
                             style={{
                                 minHeight: textHeight,
                                 maxHeight: textHeight,
@@ -245,58 +157,93 @@ function Main() {
                                 try {
                                     window.clearTimeout(executionTimeout);
                                 } catch (e) {
-                                    console.log(e);
+                                    // Ignore
                                 }
                                 try {
                                     const langDetector = new LanguageDetect();
-                                    const sourceLang =
-                                        langDetector.detect(value)[0][0];
-                                    if (sourceLang === 'english') {
-                                        setSourceLanguage(
-                                            sourceLang.charAt(0).toUpperCase() +
-                                                sourceLang.slice(1)
-                                        );
-                                        setTargetLanguage('Chinese');
+
+                                    if (langDetector.detect(value)[0][0]) {
+                                        sourceLang = 'English';
+                                        targetLang = 'Chinese';
+                                        setSourceLanguage(sourceLang);
+                                        setTargetLanguage(targetLang);
                                     }
                                 } catch (e) {
-                                    setSourceLanguage('Chinese');
-                                    setTargetLanguage('English');
+                                    sourceLang = 'Chinese';
+                                    targetLang = 'English';
+                                    setSourceLanguage(sourceLang);
+                                    setTargetLanguage(targetLang);
                                 }
                                 executionTimeout = window.setTimeout(() => {
                                     if (value.length > 0) {
+                                        setLoading(true);
                                         window.electron.ipcRenderer.once(
                                             'translate',
                                             (arg) => {
-                                                // eslint-disable-next-line no-console
-                                                setTranslatedContent(arg);
+                                                const status = arg[0];
+                                                const message = arg[1];
+                                                setLoading(false);
+
+                                                if (status === 'success') {
+                                                    setTranslatedContent(
+                                                        message
+                                                    );
+                                                } else if (
+                                                    status === 'need_api_key'
+                                                ) {
+                                                    Notification.warning({
+                                                        id: 'main_warn',
+                                                        title: t(
+                                                            'notification.warning'
+                                                        ),
+                                                        content: t(
+                                                            'notification.need_api_key'
+                                                        ),
+                                                    });
+                                                } else if (
+                                                    status === 'network_error'
+                                                ) {
+                                                    Notification.warning({
+                                                        id: 'main_warn',
+                                                        title: t(
+                                                            'notification.warning'
+                                                        ),
+                                                        content: t(
+                                                            'notification.network_error'
+                                                        ),
+                                                    });
+                                                } else if (status === 'error') {
+                                                    Notification.warning({
+                                                        id: 'main_warn',
+                                                        title: t(
+                                                            'notification.warning'
+                                                        ),
+                                                        content: t(message),
+                                                    });
+                                                }
                                             }
                                         );
                                         window.electron.ipcRenderer.sendMessage(
                                             'translate',
-                                            [
-                                                value,
-                                                sourceLanguage,
-                                                targetLanguage,
-                                            ]
+                                            [value, sourceLang, targetLang]
                                         );
+                                    } else {
+                                        setTranslatedContent('');
                                     }
                                 }, 1000);
                             }}
                             onPressEnter={(e) => {
+                                setLoading(true);
                                 window.electron.ipcRenderer.once(
                                     'translate',
                                     (arg) => {
-                                        // eslint-disable-next-line no-console
+                                        setLoading(false);
                                         setTranslatedContent(arg);
                                     }
                                 );
                                 window.electron.ipcRenderer.sendMessage(
                                     'translate',
-                                    [
-                                        e.target.value,
-                                        sourceLanguage,
-                                        targetLanguage,
-                                    ]
+                                    [e.target.value, sourceLang, targetLang]
                                 );
                             }}
                         />
@@ -304,7 +251,6 @@ function Main() {
 
                     <Col span={12}>
                         <TextArea
-                            // disabled
                             style={{
                                 minHeight: textHeight,
                                 maxHeight: textHeight,

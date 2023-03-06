@@ -1,0 +1,21 @@
+{
+    "main.translate_from": "源语言",
+    "main.translate_into": "翻译为",
+    "main.auto_detect": "自动检测",
+    "main.input_placeholder": "输入或粘贴文本进行翻译",
+
+    "settings.title": "设置",
+    "settings.auto_start": "开机自动运行",
+    "settings.run_in_background": "保持后台运行",
+    "settings.need_restart_app": "重启应用生效",
+    "settings.shortcut": "显示/隐藏窗口快捷键",
+    "settings.api_key": "API key",
+    "settings.api_key_placeholder": "输入API Key",
+    "settings.click_here": "点击这里",
+    "settings.generate_api_key": "生成API Key",
+    "settings.model": "模型",
+
+    "notification.warning": "警告",
+    "notification.need_api_key": "请在设置页面中填写API Key",
+    "notification.network_error": "网络错误"
+}

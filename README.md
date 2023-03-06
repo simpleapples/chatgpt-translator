@@ -1,3 +1,3 @@
 # GPT Translator
 
-GPT Translator is a cross-platform translation client built on ChatGPT.
+GPT Translator is a cross-platform translation app built on ChatGPT.

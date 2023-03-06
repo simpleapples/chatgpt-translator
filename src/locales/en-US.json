@@ -1,0 +1,21 @@
+{
+    "main.translate_from": "Translate from",
+    "main.translate_into": "Translate to",
+    "main.auto_detect": "Auto detect",
+    "main.input_placeholder": "Input or paste your text here",
+
+    "settings.title": "Settings",
+    "settings.auto_start": "Start at system startup",
+    "settings.run_in_background": "Keep in background",
+    "settings.need_restart_app": "Need restart application",
+    "settings.shortcut": "Shortcut to show/hide window",
+    "settings.api_key": "API key",
+    "settings.api_key_placeholder": "Enter your API key",
+    "settings.click_here": "Click here",
+    "settings.generate_api_key": "to generate your API key",
+    "settings.model": "Model",
+
+    "notification.warning": "Warning",
+    "notification.need_api_key": "Please fill in the API KEY on settings page",
+    "notification.network_error": "Network error"
+}
