@@ -25,7 +25,7 @@ import { resolveHtmlPath } from './util';
 const { globalShortcut } = require('electron');
 const Store = require('electron-store');
 
-const store = new Store({ shortcut: 'alt+q' });
+const store = new Store();
 
 class AppUpdater {
     constructor() {

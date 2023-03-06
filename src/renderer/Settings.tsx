@@ -37,9 +37,9 @@ export function Settings(props) {
                         // setModel(arg[2]);
                         // setAPIKey(arg[3]);
                         // setShortcut(arg[4]);
-                        setModel(arg[0]);
+                        setModel(arg[0] || 'gpt-3.5-turbo-0301');
                         setAPIKey(arg[1]);
-                        setShortcut(arg[2]);
+                        setShortcut(arg[2] || 'alt+q');
                     });
                     window.electron.ipcRenderer.sendMessage('settings', [
                         'get',
@@ -142,7 +142,6 @@ export function Settings(props) {
                         </FormItem>
                         <FormItem label={t('settings.model')}>
                             <Select
-                                defaultValue="gpt-3.5-turbo-0301"
                                 value={model}
                                 options={[
                                     {
