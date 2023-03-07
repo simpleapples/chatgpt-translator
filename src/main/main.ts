@@ -66,8 +66,8 @@ function generatePayload(prompt: string, content: string) {
 
 ipcMain.on('translate', async (event, arg) => {
     const payload = generatePayload(
-        `just translate sentences or words from ${arg[1]} to ${arg[2]}`,
-        arg[0]
+        `you are a translation bot that can only reply translated content without doing anything else`,
+        `translate from ${arg[1]} to ${arg[2]}\n\n${arg[0]}`
     );
     console.log(payload);
 
@@ -214,7 +214,7 @@ const createWindow = async () => {
 
     mainWindow.on('close', (event) => {
         event.preventDefault();
-        mainWindow?.minimize();
+        mainWindow?.hide();
     });
 
     mainWindow.webContents.on('will-navigate', (e, url) => {
@@ -235,9 +235,9 @@ app.whenReady()
         try {
             const shortcut = store.get('shortcut');
             globalShortcut.register(shortcut, () => {
-                if (!mainWindow) {
+                if (mainWindow === null) {
                     createWindow();
-                } else if (mainWindow.isMinimized()) {
+                } else if (!mainWindow?.isVisible()) {
                     mainWindow.show();
                 } else {
                     mainWindow.close();
