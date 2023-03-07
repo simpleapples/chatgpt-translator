@@ -1,6 +1,6 @@
 import '@arco-design/web-react/dist/css/arco.css';
 import { IconSettings } from '@arco-design/web-react/icon';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import {
     Grid,
@@ -15,27 +15,106 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Settings } from './Settings';
 
-const LanguageDetect = require('languagedetect');
-
 const { Row, Col } = Grid;
 const { Option } = Select;
 const { TextArea } = Input;
 
-const sourceLanguageList = ['English', 'Chinese'];
-const targetLanguageList = ['English', 'Chinese'];
+const targetLanguageList = [
+    'Bulgarian',
+    'Chinese (Simplified)',
+    'Chinese (Traditional)',
+    'Czech',
+    'Dutch',
+    'Danish',
+    'English (American)',
+    'English (British)',
+    'Estonian',
+    'Finnish',
+    'French',
+    'German',
+    'Greek',
+    'Hungarian',
+    'Indonesian',
+    'Italian',
+    'Japanese',
+    'Korean',
+    'Latvian',
+    'Lithuanian',
+    'Norwegian',
+    'Portuguese',
+    'Portuguese (Brazil)',
+    'Polish',
+    'Romanian',
+    'Russian',
+    'Slovak',
+    'Slovenian',
+    'Spanish',
+    'Swedish',
+    'Turkish',
+    'Ukrainian',
+    'Vietnamese',
+];
 
 function Main() {
-    let executionTimeout = window.setTimeout(() => {}, 100);
     const [textHeight, setTextHeight] = useState(window.innerHeight - 150);
     const [translatedContent, setTranslatedContent] = useState<string>();
     const [showSettings, setShowSettings] = useState(false);
-    const [sourceLanguage, setSourceLanguage] = useState<string>();
-    const [targetLanguage, setTargetLanguage] = useState<string>();
+    const [targetLanguage, setTargetLanguage] = useState<string>(
+        targetLanguageList[0]
+    );
+    const [sourceText, setSourceText] = useState('');
     const [loading, setLoading] = useState(false);
     const { t } = useTranslation();
 
-    let sourceLang = '';
-    let targetLang = '';
+    const timeoutRef = useRef();
+
+    useEffect(() => {
+        try {
+            window.clearTimeout(timeoutRef.current);
+        } catch (e) {
+            // Ignore
+        }
+
+        const executionTimeout = window.setTimeout(() => {
+            if (sourceText.length > 0) {
+                setLoading(true);
+                window.electron.ipcRenderer.once('translate', (arg) => {
+                    const status = arg[0];
+                    const message = arg[1];
+                    setLoading(false);
+
+                    if (status === 'success') {
+                        setTranslatedContent(message);
+                    } else if (status === 'need_api_key') {
+                        Notification.warning({
+                            id: 'main_warn',
+                            title: t('notification.warning'),
+                            content: t('notification.need_api_key'),
+                        });
+                    } else if (status === 'network_error') {
+                        Notification.warning({
+                            id: 'main_warn',
+                            title: t('notification.warning'),
+                            content: t('notification.network_error'),
+                        });
+                    } else if (status === 'error') {
+                        Notification.warning({
+                            id: 'main_warn',
+                            title: t('notification.warning'),
+                            content: t(message),
+                        });
+                    }
+                });
+                window.electron.ipcRenderer.sendMessage('translate', [
+                    sourceText,
+                    targetLanguage,
+                ]);
+            } else {
+                setTranslatedContent('');
+            }
+        }, 1000);
+        timeoutRef.current = executionTimeout;
+    }, [sourceText, targetLanguage]);
 
     window.onresize = () => {
         setTextHeight(window.innerHeight - 150);
@@ -79,31 +158,7 @@ function Main() {
                     style={{ marginBottom: 16 }}
                     gutter={[12, 12]}
                 >
-                    <Col span={11}>
-                        <Typography.Paragraph
-                            style={{
-                                width: 300,
-                            }}
-                        >
-                            {t('main.translate_from')}
-                            <Select
-                                popupVisible={false}
-                                placeholder={t<string>('main.auto_detect')}
-                                style={{ width: 160 }}
-                                bordered={false}
-                                value={sourceLanguage}
-                                onChange={(option) => {
-                                    setSourceLanguage(option);
-                                }}
-                            >
-                                {sourceLanguageList.map((option) => (
-                                    <Option key={option} value={option}>
-                                        {option}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </Typography.Paragraph>
-                    </Col>
+                    <Col span={11} />
                     <Col span={1}>
                         <Spin
                             block
@@ -121,13 +176,11 @@ function Main() {
                         >
                             {t('main.translate_into')}
                             <Select
-                                popupVisible={false}
-                                placeholder={t<string>('main.auto_detect')}
-                                style={{ width: 160 }}
+                                style={{ width: 200 }}
                                 bordered={false}
                                 value={targetLanguage}
-                                onChange={(option) => {
-                                    setTargetLanguage(option);
+                                onChange={(value) => {
+                                    setTargetLanguage(value);
                                 }}
                             >
                                 {targetLanguageList.map((option) => (
@@ -154,97 +207,7 @@ function Main() {
                                 fontSize: 20,
                             }}
                             onChange={(value) => {
-                                try {
-                                    window.clearTimeout(executionTimeout);
-                                } catch (e) {
-                                    // Ignore
-                                }
-                                try {
-                                    const langDetector = new LanguageDetect();
-
-                                    if (langDetector.detect(value)[0][0]) {
-                                        sourceLang = 'English';
-                                        targetLang = 'Chinese';
-                                        setSourceLanguage(sourceLang);
-                                        setTargetLanguage(targetLang);
-                                    }
-                                } catch (e) {
-                                    sourceLang = 'Chinese';
-                                    targetLang = 'English';
-                                    setSourceLanguage(sourceLang);
-                                    setTargetLanguage(targetLang);
-                                }
-                                executionTimeout = window.setTimeout(() => {
-                                    if (value.length > 0) {
-                                        setLoading(true);
-                                        window.electron.ipcRenderer.once(
-                                            'translate',
-                                            (arg) => {
-                                                const status = arg[0];
-                                                const message = arg[1];
-                                                setLoading(false);
-
-                                                if (status === 'success') {
-                                                    setTranslatedContent(
-                                                        message
-                                                    );
-                                                } else if (
-                                                    status === 'need_api_key'
-                                                ) {
-                                                    Notification.warning({
-                                                        id: 'main_warn',
-                                                        title: t(
-                                                            'notification.warning'
-                                                        ),
-                                                        content: t(
-                                                            'notification.need_api_key'
-                                                        ),
-                                                    });
-                                                } else if (
-                                                    status === 'network_error'
-                                                ) {
-                                                    Notification.warning({
-                                                        id: 'main_warn',
-                                                        title: t(
-                                                            'notification.warning'
-                                                        ),
-                                                        content: t(
-                                                            'notification.network_error'
-                                                        ),
-                                                    });
-                                                } else if (status === 'error') {
-                                                    Notification.warning({
-                                                        id: 'main_warn',
-                                                        title: t(
-                                                            'notification.warning'
-                                                        ),
-                                                        content: t(message),
-                                                    });
-                                                }
-                                            }
-                                        );
-                                        window.electron.ipcRenderer.sendMessage(
-                                            'translate',
-                                            [value, sourceLang, targetLang]
-                                        );
-                                    } else {
-                                        setTranslatedContent('');
-                                    }
-                                }, 1000);
-                            }}
-                            onPressEnter={(e) => {
-                                setLoading(true);
-                                window.electron.ipcRenderer.once(
-                                    'translate',
-                                    (arg) => {
-                                        setLoading(false);
-                                        setTranslatedContent(arg);
-                                    }
-                                );
-                                window.electron.ipcRenderer.sendMessage(
-                                    'translate',
-                                    [e.target.value, sourceLang, targetLang]
-                                );
+                                setSourceText(value);
                             }}
                         />
                     </Col>
