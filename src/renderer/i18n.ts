@@ -14,6 +14,12 @@ const i18nextOptions = {
         'en-US': {
             translation: enUS,
         },
+        zh: {
+            translation: zhCN,
+        },
+        en: {
+            translation: enUS,
+        },
     },
     interpolation: {
         escapeValue: false,
