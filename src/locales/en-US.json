@@ -1,8 +1,7 @@
 {
-    "main.translate_from": "Translate from",
     "main.translate_into": "Translate to",
-    "main.auto_detect": "Auto detect",
     "main.input_placeholder": "Input or paste your text here",
+    "main.select_language": "Select a language",
 
     "settings.title": "Settings",
     "settings.auto_start": "Start at system startup",

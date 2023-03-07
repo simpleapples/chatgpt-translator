@@ -65,11 +65,12 @@ function generatePayload(prompt: string, content: string) {
 }
 
 ipcMain.on('translate', async (event, arg) => {
+    const text = arg[0];
+    const targetLang = arg[1];
     const payload = generatePayload(
-        `you are a translation bot that can only reply translated content without doing anything else`,
-        `translate from ${arg[1]} to ${arg[2]}\n\n${arg[0]}`
+        `I want you to act as an ${targetLang} translator. I will speak to you in any language and you translate it and answer in the corrected and improved version of my text in ${targetLang}. I want you to only reply the translated text and nothing else, do not write explanations.`,
+        text
     );
-    console.log(payload);
 
     let status = '';
     let message = '';
@@ -85,10 +86,7 @@ ipcMain.on('translate', async (event, arg) => {
         .text()
         .then((res) => {
             const respJSON = JSON.parse(res);
-            console.log(respJSON);
-
             try {
-                console.log(respJSON.choices[0].message);
                 message = respJSON.choices[0].message.content;
                 status = 'success';
             } catch (e) {

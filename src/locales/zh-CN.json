@@ -1,8 +1,7 @@
 {
-    "main.translate_from": "源语言",
     "main.translate_into": "翻译为",
-    "main.auto_detect": "自动检测",
     "main.input_placeholder": "输入或粘贴文本进行翻译",
+    "main.select_language": "选择语言",
 
     "settings.title": "设置",
     "settings.auto_start": "开机自动运行",
