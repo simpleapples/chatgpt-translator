@@ -1,11 +1,8 @@
 <div align="center">
 <img width="256" src="https://github.com/simpleapples/chatgpt-translator/blob/master/assets/icons/512x512.png">
-<h1>ChatGPT Translator</h1>
-<h4>[EN](https://github.com/simpleapples/chatgpt-translator#readme)</h4>
-<h4><i>软件 Logo 由 Midjourney 生成</i></h4>
+    <h1>ChatGPT Translator</h1><h3><a href="https://github.com/simpleapples/chatgpt-translator#readme">English Version</a></h3>
 </div>
-
-ChatGPT Translator 是一个开源的跨平台桌面客户端，使用 ChatGPT 来翻译文章和句子。
+ChatGPT Translator 是一个基于 ChatGPT 的开源、跨平台桌面翻译软件。软件 Logo 由 Midjourney 生成。
 
 ## 截图
 
