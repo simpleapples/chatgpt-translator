@@ -30,6 +30,8 @@ const store = new Store({
     shortcut: 'q',
     shortcut_prefix: 'alt',
     model: 'gpt-3.5-turbo-0301',
+    keep_in_background: true,
+    auto_start: false,
 });
 if (os.platform() === 'darwin') {
     store.set('shortcut_prefix', 'option');
@@ -124,7 +126,11 @@ ipcMain.on('settings', async (event, arg) => {
             store.set(key, value);
         }
         if (key === 'shortcut' || key === 'shortcut_prefix') {
+            // eslint-disable-next-line no-use-before-define
             registerShortcut();
+        } else if (key === 'auto_start') {
+            // eslint-disable-next-line no-use-before-define
+            updateAutoStart();
         }
     }
 });
@@ -163,8 +169,8 @@ const getAssetPath = (...paths: string[]): string => {
 
 function createTray() {
     const icon = getAssetPath('icon.png'); // required.
-    const trayicon = nativeImage.createFromPath(icon);
-    tray = new Tray(trayicon.resize({ width: 16 }));
+    const trayIcon = nativeImage.createFromPath(icon);
+    tray = new Tray(trayIcon.resize({ width: 16 }));
     const contextMenu = Menu.buildFromTemplate([
         {
             label: '显示窗口 | Show',
@@ -199,14 +205,14 @@ const createWindow = async () => {
         width: defaultW,
         height: defaultH,
         icon: getAssetPath('icon.png'),
-        autoHideMenuBar: true,
         webPreferences: {
+            devTools: !app.isPackaged,
             preload: app.isPackaged
                 ? path.join(__dirname, 'preload.js')
                 : path.join(__dirname, '../../.erb/dll/preload.js'),
         },
     });
-
+    mainWindow.setMenu(null);
     mainWindow.loadURL(resolveHtmlPath('index.html'));
 
     mainWindow.on('ready-to-show', () => {
@@ -220,8 +226,16 @@ const createWindow = async () => {
         }
     });
 
-    mainWindow.on('dom-ready', () => {
+    mainWindow.webContents.on('dom-ready', () => {
         mainWindow?.setSize(defaultW, defaultH);
+    });
+
+    mainWindow.on('close', (event) => {
+        console.log(store.get('run_in_background'));
+        if (store.get('run_in_background') === true) {
+            event.preventDefault();
+            mainWindow?.hide();
+        }
     });
 
     mainWindow.webContents.on('will-navigate', (e, url) => {
@@ -233,6 +247,13 @@ const createWindow = async () => {
     // eslint-disable-next-line
     new AppUpdater();
 };
+
+function updateAutoStart() {
+    app.setLoginItemSettings({
+        openAtLogin: store.get('auto_start'),
+        path: app.getPath('exe'),
+    });
+}
 
 function registerShortcut() {
     try {
@@ -269,3 +290,12 @@ app.whenReady()
         });
     })
     .catch(console.log);
+
+app.on('ready', () => {
+    updateAutoStart();
+});
+
+app.on('before-quit', () => {
+    mainWindow?.removeAllListeners('close');
+    mainWindow = null;
+});

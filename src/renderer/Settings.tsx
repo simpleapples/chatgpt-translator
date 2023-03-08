@@ -16,16 +16,20 @@ const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 
 /* eslint-disable import/prefer-default-export */
-export function Settings(props) {
-    const [model, setModel] = useState();
-    // const [autoStart, setAutoStart] = useState(false);
+export function Settings(props: {
+    showSettings: boolean;
+    onCancel: () => void;
+}) {
+    const { showSettings, onCancel } = props;
+    const [model, setModel] = useState<string>();
+    const [autoStart, setAutoStart] = useState<boolean>();
     const [apiKey, setAPIKey] = useState<string>();
-    const [shortcut, setShortcut] = useState<string>('Q');
-    const [shortcutPrefix, setShortcutPrefix] = useState<string>('Alt');
-    const [runInBackground, setRunInBackground] = useState(false);
+    const [shortcut, setShortcut] = useState<string>();
+    const [shortcutPrefix, setShortcutPrefix] = useState<string>();
+    const [runInBackground, setRunInBackground] = useState<boolean>();
     const { t } = useTranslation();
 
-    let shortcutPreifxOptions = [
+    let shortcutPrefixOptions = [
         {
             value: 'alt',
             label: 'Alt',
@@ -44,7 +48,7 @@ export function Settings(props) {
         },
     ];
     if (window.electron.platform === 'darwin') {
-        shortcutPreifxOptions = [
+        shortcutPrefixOptions = [
             {
                 value: 'option',
                 label: 'Opt',
@@ -118,25 +122,25 @@ export function Settings(props) {
                 width={500}
                 title={<span>{t('settings.title')}</span>}
                 footer
-                visible={props.showSettings}
-                onCancel={props.onCancel}
+                visible={showSettings}
+                onCancel={onCancel}
                 afterOpen={() => {
-                    window.electron.ipcRenderer.once('settings', (arg) => {
-                        // setAutoStart(arg[0]);
-                        // setRunInBackground(arg[1]);
-                        // setModel(arg[2]);
-                        // setAPIKey(arg[3]);
-                        // setShortcut(arg[4]);
-                        setModel(arg[0]);
-                        setAPIKey(arg[1]);
-                        setShortcutPrefix(arg[2]);
-                        setShortcut(arg[3]);
-                    });
+                    window.electron.ipcRenderer.once(
+                        'settings',
+                        (...arg: unknown[]) => {
+                            setAutoStart(Boolean(arg[0]));
+                            setRunInBackground(Boolean(arg[1]));
+                            setModel(String(arg[2]));
+                            setAPIKey(String(arg[3]));
+                            setShortcutPrefix(String(arg[4]));
+                            setShortcut(String(arg[5]));
+                        }
+                    );
                     window.electron.ipcRenderer.sendMessage('settings', [
                         'get',
                         [
-                            // 'auto_start',
-                            // 'run_in_background',
+                            'auto_start',
+                            'run_in_background',
                             'model',
                             'api_key',
                             'shortcut_prefix',
@@ -145,14 +149,14 @@ export function Settings(props) {
                     ]);
                 }}
                 afterClose={() => {
-                    // window.electron.ipcRenderer.sendMessage('settings', [
-                    //     'set',
-                    //     ['auto_start', autoStart],
-                    // ]);
-                    // window.electron.ipcRenderer.sendMessage('settings', [
-                    //     'set',
-                    //     ['run_in_background', runInBackground],
-                    // ]);
+                    window.electron.ipcRenderer.sendMessage('settings', [
+                        'set',
+                        ['auto_start', autoStart],
+                    ]);
+                    window.electron.ipcRenderer.sendMessage('settings', [
+                        'set',
+                        ['run_in_background', runInBackground],
+                    ]);
                     window.electron.ipcRenderer.sendMessage('settings', [
                         'set',
                         ['model', model],
@@ -177,11 +181,9 @@ export function Settings(props) {
                         style={{ width: 450 }}
                         autoComplete="off"
                     >
-                        {/* <FormItem
+                        <FormItem
                             label={t('settings.auto_start')}
                             field="autostart"
-                            triggerPropName="checked"
-                            rules={[{ type: 'boolean' }]}
                         >
                             <Switch
                                 checked={autoStart}
@@ -189,12 +191,10 @@ export function Settings(props) {
                                     setAutoStart(value);
                                 }}
                             />
-                        </FormItem> */}
-                        {/* <FormItem
+                        </FormItem>
+                        <FormItem
                             label={t('settings.run_in_background')}
                             field="runInBackground"
-                            triggerPropName="checked"
-                            rules={[{ type: 'boolean' }]}
                         >
                             <Switch
                                 checked={runInBackground}
@@ -202,18 +202,17 @@ export function Settings(props) {
                                     setRunInBackground(value);
                                 }}
                             />
-                        </FormItem> */}
+                        </FormItem>
                         <FormItem label={t('settings.shortcut')}>
                             <Grid.Row>
                                 <Grid.Col span={12}>
                                     <RadioGroup
-                                        options={shortcutPreifxOptions}
+                                        options={shortcutPrefixOptions}
                                         size="default"
                                         type="button"
                                         value={shortcutPrefix}
                                         style={{ marginBottom: 20 }}
                                         onChange={(value) => {
-                                            console.log(value);
                                             setShortcutPrefix(value);
                                         }}
                                     />
