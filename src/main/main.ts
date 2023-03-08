@@ -76,8 +76,8 @@ ipcMain.on('translate', async (event, arg) => {
     const text = arg[0];
     const targetLang = arg[1];
     const payload = generatePayload(
-        `I want you to act as an ${targetLang} translator. I will speak to you in any language and you translate it and answer in the corrected and improved version of my text in ${targetLang}. I want you to only reply the translated text and nothing else, do not write explanations.`,
-        text
+        `I want you to act as an ${targetLang} translator. I will speak to you in any language and you translate it and answer in the corrected and improved version of my sentence/phrase/word in ${targetLang}. I want you to only reply the translated sentence/phrase/word and nothing else, do not write explanations. You do not need to reply a complete sentence.`,
+        `The text or word is: ${text}`
     );
 
     let status = '';
