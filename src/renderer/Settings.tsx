@@ -7,20 +7,110 @@ import {
     Drawer,
     Form,
     Switch,
+    Radio,
 } from '@arco-design/web-react';
 import { useTranslation } from 'react-i18next';
 
 const { Row } = Grid;
 const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
 
 /* eslint-disable import/prefer-default-export */
 export function Settings(props) {
     const [model, setModel] = useState();
     // const [autoStart, setAutoStart] = useState(false);
     const [apiKey, setAPIKey] = useState<string>();
-    const [shortcut, setShortcut] = useState<string>();
+    const [shortcut, setShortcut] = useState<string>('Q');
+    const [shortcutPrefix, setShortcutPrefix] = useState<string>('Alt');
     const [runInBackground, setRunInBackground] = useState(false);
     const { t } = useTranslation();
+
+    let shortcutPreifxOptions = [
+        {
+            value: 'alt',
+            label: 'Alt',
+        },
+        {
+            value: 'ctrl',
+            label: 'Ctrl',
+        },
+        {
+            value: 'shift',
+            label: 'Shift',
+        },
+        {
+            value: 'win',
+            label: 'Win',
+        },
+    ];
+    if (window.electron.platform === 'darwin') {
+        shortcutPreifxOptions = [
+            {
+                value: 'option',
+                label: 'Opt',
+            },
+            {
+                value: 'ctrl',
+                label: 'Ctrl',
+            },
+            {
+                value: 'shift',
+                label: 'Shift',
+            },
+            {
+                value: 'command',
+                label: 'Cmd',
+            },
+        ];
+    }
+    const shortcutOptions = [
+        { value: '1', key: '1' },
+        { value: '2', key: '2' },
+        { value: '3', key: '3' },
+        { value: '4', key: '4' },
+        { value: '5', key: '5' },
+        { value: '6', key: '6' },
+        { value: '7', key: '7' },
+        { value: '8', key: '8' },
+        { value: '9', key: '9' },
+        { value: '0', key: '0' },
+        { value: '-', key: '-' },
+        { value: '=', key: '=' },
+        { value: 'tab', key: 'TAB' },
+        { value: 'q', key: 'Q' },
+        { value: 'w', key: 'W' },
+        { value: 'e', key: 'E' },
+        { value: 'r', key: 'R' },
+        { value: 't', key: 'T' },
+        { value: 'y', key: 'Y' },
+        { value: 'u', key: 'U' },
+        { value: 'i', key: 'I' },
+        { value: 'o', key: 'O' },
+        { value: 'p', key: 'P' },
+        { value: '[', key: '[' },
+        { value: ']', key: ']' },
+        { value: 'a', key: 'A' },
+        { value: 's', key: 'S' },
+        { value: 'd', key: 'D' },
+        { value: 'f', key: 'F' },
+        { value: 'g', key: 'G' },
+        { value: 'h', key: 'H' },
+        { value: 'j', key: 'J' },
+        { value: 'k', key: 'K' },
+        { value: 'l', key: 'L' },
+        { value: ';', key: ';' },
+        { value: "'", key: "'" },
+        { value: 'z', key: 'Z' },
+        { value: 'x', key: 'X' },
+        { value: 'c', key: 'C' },
+        { value: 'v', key: 'V' },
+        { value: 'b', key: 'B' },
+        { value: 'n', key: 'N' },
+        { value: 'm', key: 'M' },
+        { value: ',', key: ',' },
+        { value: '.', key: '.' },
+        { value: '/', key: '/' },
+    ];
 
     return (
         <div>
@@ -37,9 +127,10 @@ export function Settings(props) {
                         // setModel(arg[2]);
                         // setAPIKey(arg[3]);
                         // setShortcut(arg[4]);
-                        setModel(arg[0] || 'gpt-3.5-turbo-0301');
+                        setModel(arg[0]);
                         setAPIKey(arg[1]);
-                        setShortcut(arg[2] || 'alt+q');
+                        setShortcutPrefix(arg[2]);
+                        setShortcut(arg[3]);
                     });
                     window.electron.ipcRenderer.sendMessage('settings', [
                         'get',
@@ -48,6 +139,7 @@ export function Settings(props) {
                             // 'run_in_background',
                             'model',
                             'api_key',
+                            'shortcut_prefix',
                             'shortcut',
                         ],
                     ]);
@@ -68,6 +160,10 @@ export function Settings(props) {
                     window.electron.ipcRenderer.sendMessage('settings', [
                         'set',
                         ['api_key', apiKey],
+                    ]);
+                    window.electron.ipcRenderer.sendMessage('settings', [
+                        'set',
+                        ['shortcut_prefix', shortcutPrefix],
                     ]);
                     window.electron.ipcRenderer.sendMessage('settings', [
                         'set',
@@ -111,12 +207,37 @@ export function Settings(props) {
                             label={t('settings.shortcut')}
                             extra={t('settings.need_restart_app')}
                         >
-                            <Input
-                                value={shortcut}
-                                onChange={(value) => {
-                                    setShortcut(value);
-                                }}
-                            />
+                            <Grid.Row>
+                                <Grid.Col span={12}>
+                                    <RadioGroup
+                                        options={shortcutPreifxOptions}
+                                        size="default"
+                                        type="button"
+                                        value={shortcutPrefix}
+                                        style={{ marginBottom: 20 }}
+                                        onChange={(value) => {
+                                            console.log(value);
+                                            setShortcutPrefix(value);
+                                        }}
+                                    />
+                                </Grid.Col>
+                                <Grid.Col span={1}>+</Grid.Col>
+                                <Grid.Col span={4}>
+                                    <Select
+                                        value={shortcut}
+                                        onChange={(value) => {
+                                            setShortcut(value);
+                                        }}
+                                        showSearch
+                                    >
+                                        {shortcutOptions.map((item) => (
+                                            <Select.Option value={item.value}>
+                                                {item.key}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Grid.Col>
+                            </Grid.Row>
                         </FormItem>
                         <FormItem
                             label={t('settings.api_key')}
@@ -125,6 +246,7 @@ export function Settings(props) {
                                     <a href="https://platform.openai.com/account/api-keys">
                                         {t('settings.click_here')}
                                     </a>
+                                    <span> </span>
                                     {t('settings.generate_api_key')}
                                 </div>
                             }

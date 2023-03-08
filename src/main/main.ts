@@ -22,10 +22,18 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { resolveHtmlPath } from './util';
 
+const os = require('os');
 const { globalShortcut } = require('electron');
 const Store = require('electron-store');
 
-const store = new Store();
+const store = new Store({
+    shortcut: 'q',
+    shortcut_prefix: 'alt',
+    model: 'gpt-3.5-turbo-0301',
+});
+if (os.platform() === 'darwin') {
+    store.set('shortcut_prefix', 'option');
+}
 
 class AppUpdater {
     constructor() {
@@ -103,13 +111,20 @@ ipcMain.on('translate', async (event, arg) => {
 });
 
 ipcMain.on('settings', async (event, arg) => {
-    if (arg[0] === 'get') {
+    const type = arg[0];
+    if (type === 'get') {
+        const items = arg[1];
         const res: any[] = [];
-        arg[1].map((item: any) => res.push(store.get(item)));
+        items.map((item: any) => res.push(store.get(item)));
         event.reply('settings', res);
-    } else if (arg[0] === 'set') {
-        if (arg[1][1] !== undefined) {
-            store.set(arg[1][0], arg[1][1]);
+    } else if (type === 'set') {
+        const key = arg[1][0];
+        const value = arg[1][1];
+        if (value !== undefined) {
+            store.set(key, value);
+        }
+        if (key === 'shortcut' || key === 'shortcut_prefix') {
+            registerShortcut();
         }
     }
 });
@@ -224,25 +239,33 @@ const createWindow = async () => {
     new AppUpdater();
 };
 
+function registerShortcut() {
+    try {
+        const shortcut = store.get('shortcut');
+        const shortcutPrefix = store.get('shortcut_prefix');
+        globalShortcut.register(`${shortcutPrefix}+${shortcut}`, () => {
+            if (mainWindow === null) {
+                createWindow();
+            } else if (!mainWindow?.isVisible()) {
+                mainWindow.show();
+            } else {
+                mainWindow.close();
+            }
+        });
+    } catch (e) {
+        // Ignore
+    }
+}
+
 /**
  * Add event listeners...
  */
 app.whenReady()
     .then(() => {
-        try {
-            const shortcut = store.get('shortcut');
-            globalShortcut.register(shortcut, () => {
-                if (mainWindow === null) {
-                    createWindow();
-                } else if (!mainWindow?.isVisible()) {
-                    mainWindow.show();
-                } else {
-                    mainWindow.close();
-                }
-            });
-        } catch (e) {
-            // Ignore
+        if (os.platform() === 'darwin') {
+            store.set('shortcut_prefix', 'option');
         }
+        registerShortcut();
         createWindow();
         app.on('activate', () => {
             // On macOS it's common to re-create a window in the app when the
