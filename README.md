@@ -11,7 +11,7 @@ ChatGPT Translator is an open-source desktop app that allows you to translate te
 
 Left one is the ChatGPT Translator, Right one is the DeepL.
 
-<img width="380" src="https://github.com/simpleapples/chatgpt-translator/blob/master/docs/chatgpt_screenshot.png"><img width="400" src="https://github.com/simpleapples/chatgpt-translator/blob/master/docs/deepl_screenshot.png">
+<img width="390" src="https://github.com/simpleapples/chatgpt-translator/blob/master/docs/chatgpt_screenshot.png"><img width="390" src="https://github.com/simpleapples/chatgpt-translator/blob/master/docs/deepl_screenshot.png">
 
 ## Features
 

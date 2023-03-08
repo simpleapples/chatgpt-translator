@@ -11,7 +11,7 @@ ChatGPT Translator 是一个开源的跨平台桌面客户端，使用 ChatGPT �
 
 左侧是 ChatGPT Translator 的界面，右侧是 DeepL 客户端的界面
 
-<img width="380" src="https://github.com/simpleapples/chatgpt-translator/blob/master/docs/chatgpt_screenshot.png"><img width="400" src="https://github.com/simpleapples/chatgpt-translator/blob/master/docs/deepl_screenshot.png">
+<img width="390" src="https://github.com/simpleapples/chatgpt-translator/blob/master/docs/chatgpt_screenshot.png"><img width="390" src="https://github.com/simpleapples/chatgpt-translator/blob/master/docs/deepl_screenshot.png">
 
 ## 主要功能
 
