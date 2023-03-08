@@ -28,16 +28,29 @@ const Store = require('electron-store');
 
 const store = new Store({
     schema: {
-        shortcut: 'q',
-        shortcut_prefix: 'alt',
-        model: 'gpt-3.5-turbo-0301',
-        keep_in_background: true,
-        auto_start: false,
+        shortcut: {
+            type: 'string',
+            default: 'q',
+        },
+        shortcut_prefix: {
+            type: 'string',
+            default: 'option' ? os.platform() === 'darwin' : 'alt',
+        },
+        model: {
+            type: 'string',
+            default: 'gpt-3.5-turbo-0301',
+        },
+        keep_in_background: {
+            type: 'boolean',
+            default: true,
+        },
+
+        auto_start: {
+            type: 'boolean',
+            default: false,
+        },
     },
 });
-if (os.platform() === 'darwin') {
-    store.set('shortcut_prefix', 'option');
-}
 
 class AppUpdater {
     constructor() {
