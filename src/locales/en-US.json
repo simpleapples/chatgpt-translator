@@ -6,7 +6,6 @@
     "settings.title": "Settings",
     "settings.auto_start": "Start at system startup",
     "settings.run_in_background": "Keep in background",
-    "settings.need_restart_app": "Need restart application",
     "settings.shortcut": "Shortcut to show/hide window",
     "settings.api_key": "API key",
     "settings.api_key_placeholder": "Enter your API key",

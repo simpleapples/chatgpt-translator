@@ -21,6 +21,7 @@ const i18nextOptions = {
             translation: enUS,
         },
     },
+    fallbackLng: 'en',
     interpolation: {
         escapeValue: false,
     },

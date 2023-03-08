@@ -6,7 +6,6 @@
     "settings.title": "设置",
     "settings.auto_start": "开机自动运行",
     "settings.run_in_background": "保持后台运行",
-    "settings.need_restart_app": "重启应用生效",
     "settings.shortcut": "显示/隐藏窗口快捷键",
     "settings.api_key": "API key",
     "settings.api_key_placeholder": "输入API Key",

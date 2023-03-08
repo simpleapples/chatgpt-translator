@@ -203,10 +203,7 @@ export function Settings(props) {
                                 }}
                             />
                         </FormItem> */}
-                        <FormItem
-                            label={t('settings.shortcut')}
-                            extra={t('settings.need_restart_app')}
-                        >
+                        <FormItem label={t('settings.shortcut')}>
                             <Grid.Row>
                                 <Grid.Col span={12}>
                                     <RadioGroup
@@ -231,7 +228,10 @@ export function Settings(props) {
                                         showSearch
                                     >
                                         {shortcutOptions.map((item) => (
-                                            <Select.Option value={item.value}>
+                                            <Select.Option
+                                                value={item.value}
+                                                key={item.value}
+                                            >
                                                 {item.key}
                                             </Select.Option>
                                         ))}

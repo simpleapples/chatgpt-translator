@@ -204,7 +204,7 @@ function Main() {
                             style={{
                                 minHeight: textHeight,
                                 maxHeight: textHeight,
-                                fontSize: 20,
+                                fontSize: 24,
                             }}
                             onChange={(value) => {
                                 setSourceText(value);
@@ -217,7 +217,7 @@ function Main() {
                             style={{
                                 minHeight: textHeight,
                                 maxHeight: textHeight,
-                                fontSize: 20,
+                                fontSize: 24,
                             }}
                             value={translatedContent}
                         />
