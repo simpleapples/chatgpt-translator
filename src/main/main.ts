@@ -34,7 +34,7 @@ const store = new Store({
         },
         shortcut_prefix: {
             type: 'string',
-            default: 'option' ? os.platform() === 'darwin' : 'alt',
+            default: os.platform() === 'darwin' ? 'option' : 'alt',
         },
         model: {
             type: 'string',
