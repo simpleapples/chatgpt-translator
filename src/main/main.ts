@@ -27,11 +27,13 @@ const { globalShortcut } = require('electron');
 const Store = require('electron-store');
 
 const store = new Store({
-    shortcut: 'q',
-    shortcut_prefix: 'alt',
-    model: 'gpt-3.5-turbo-0301',
-    keep_in_background: true,
-    auto_start: false,
+    schema: {
+        shortcut: 'q',
+        shortcut_prefix: 'alt',
+        model: 'gpt-3.5-turbo-0301',
+        keep_in_background: true,
+        auto_start: false,
+    },
 });
 if (os.platform() === 'darwin') {
     store.set('shortcut_prefix', 'option');
