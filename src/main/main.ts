@@ -224,11 +224,6 @@ const createWindow = async () => {
         mainWindow?.setSize(defaultW, defaultH);
     });
 
-    mainWindow.on('close', (event) => {
-        event.preventDefault();
-        mainWindow?.hide();
-    });
-
     mainWindow.webContents.on('will-navigate', (e, url) => {
         e.preventDefault();
         shell.openExternal(url);
@@ -249,7 +244,7 @@ function registerShortcut() {
             } else if (!mainWindow?.isVisible()) {
                 mainWindow.show();
             } else {
-                mainWindow.close();
+                mainWindow.hide();
             }
         });
     } catch (e) {
