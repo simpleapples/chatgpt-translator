@@ -125,17 +125,14 @@ export function Settings(props: {
                 visible={showSettings}
                 onCancel={onCancel}
                 afterOpen={() => {
-                    window.electron.ipcRenderer.once(
-                        'settings',
-                        (...arg: unknown[]) => {
-                            setAutoStart(Boolean(arg[0]));
-                            setRunInBackground(Boolean(arg[1]));
-                            setModel(String(arg[2]));
-                            setAPIKey(String(arg[3]));
-                            setShortcutPrefix(String(arg[4]));
-                            setShortcut(String(arg[5]));
-                        }
-                    );
+                    window.electron.ipcRenderer.once('settings', (arg: any) => {
+                        setAutoStart(arg[0]);
+                        setRunInBackground(arg[1]);
+                        setModel(arg[2]);
+                        setAPIKey(arg[3]);
+                        setShortcutPrefix(arg[4]);
+                        setShortcut(arg[5]);
+                    });
                     window.electron.ipcRenderer.sendMessage('settings', [
                         'get',
                         [
