@@ -1,6 +1,7 @@
 <div align="center">
 <img width="256" src="https://github.com/simpleapples/chatgpt-translator/blob/master/assets/icons/512x512.png">
-<h1>ChatGPT Translator [EN](https://github.com/simpleapples/chatgpt-translator#readme)</h1>
+<h1>ChatGPT Translator</h1>
+<h4>[EN](https://github.com/simpleapples/chatgpt-translator#readme)</h4>
 <h4><i>软件 Logo 由 Midjourney 生成</i></h4>
 </div>
 
