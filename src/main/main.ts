@@ -49,6 +49,10 @@ const store = new Store({
             type: 'boolean',
             default: false,
         },
+        api_domain: {
+            type: 'string',
+            default: '',
+        },
     },
 });
 
@@ -99,8 +103,10 @@ ipcMain.on('translate', async (event, arg) => {
 
     let status = '';
     let message = '';
+    const apiPath = store.get('api_domain') || 'https://api.openai.com';
+    console.log(apiPath);
     const response = (await fetch(
-        'https://api.openai.com/v1/chat/completions',
+        `${apiPath}/v1/chat/completions`,
         payload
     ).catch(() => {
         message = 'Network error';

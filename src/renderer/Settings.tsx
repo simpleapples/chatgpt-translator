@@ -24,6 +24,7 @@ export function Settings(props: {
     const [model, setModel] = useState<string>();
     const [autoStart, setAutoStart] = useState<boolean>();
     const [apiKey, setAPIKey] = useState<string>();
+    const [apiDomain, setAPIDomain] = useState<string>();
     const [shortcut, setShortcut] = useState<string>();
     const [shortcutPrefix, setShortcutPrefix] = useState<string>();
     const [runInBackground, setRunInBackground] = useState<boolean>();
@@ -130,8 +131,9 @@ export function Settings(props: {
                         setRunInBackground(arg[1]);
                         setModel(arg[2]);
                         setAPIKey(arg[3]);
-                        setShortcutPrefix(arg[4]);
-                        setShortcut(arg[5]);
+                        setAPIDomain(arg[4]);
+                        setShortcutPrefix(arg[5]);
+                        setShortcut(arg[6]);
                     });
                     window.electron.ipcRenderer.sendMessage('settings', [
                         'get',
@@ -140,6 +142,7 @@ export function Settings(props: {
                             'run_in_background',
                             'model',
                             'api_key',
+                            'api_domain',
                             'shortcut_prefix',
                             'shortcut',
                         ],
@@ -161,6 +164,10 @@ export function Settings(props: {
                     window.electron.ipcRenderer.sendMessage('settings', [
                         'set',
                         ['api_key', apiKey],
+                    ]);
+                    window.electron.ipcRenderer.sendMessage('settings', [
+                        'set',
+                        ['api_domain', apiDomain],
                     ]);
                     window.electron.ipcRenderer.sendMessage('settings', [
                         'set',
@@ -258,10 +265,39 @@ export function Settings(props: {
                                 }}
                             />
                         </FormItem>
+                        <FormItem label={t('settings.api_domain')}>
+                            <Input.Password
+                                placeholder={t<string>(
+                                    'settings.api_domain_placeholder'
+                                )}
+                                defaultVisibility={false}
+                                value={apiDomain}
+                                onChange={(value) => {
+                                    setAPIDomain(value);
+                                }}
+                            />
+                        </FormItem>
                         <FormItem label={t('settings.model')}>
                             <Select
                                 value={model}
                                 options={[
+                                    {
+                                        label: 'gpt-4-32k-0314',
+                                        value: 'gpt-4-32k-0314',
+                                    },
+                                    {
+                                        label: 'gpt-4-32k',
+                                        value: 'gpt-4-32k',
+                                    },
+
+                                    {
+                                        label: 'gpt-4-0314',
+                                        value: 'gpt-4-0314',
+                                    },
+                                    {
+                                        label: 'gpt-4',
+                                        value: 'gpt-4',
+                                    },
                                     {
                                         label: 'gpt-3.5-turbo-0301',
                                         value: 'gpt-3.5-turbo-0301',

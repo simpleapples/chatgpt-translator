@@ -9,6 +9,8 @@
     "settings.shortcut": "Shortcut to show/hide window",
     "settings.api_key": "API key",
     "settings.api_key_placeholder": "Enter your API key",
+    "settings.api_domain": "API Domain",
+    "settings.api_domain_placeholder": "Enter your custom API domain",
     "settings.click_here": "Click here",
     "settings.generate_api_key": "to generate your API key",
     "settings.model": "Model",

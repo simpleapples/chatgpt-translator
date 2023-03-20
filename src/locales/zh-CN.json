@@ -9,6 +9,8 @@
     "settings.shortcut": "显示/隐藏窗口快捷键",
     "settings.api_key": "API key",
     "settings.api_key_placeholder": "输入API Key",
+    "settings.api_domain": "API 域名",
+    "settings.api_domain_placeholder": "自定义 API 域名",
     "settings.click_here": "点击这里",
     "settings.generate_api_key": "生成API Key",
     "settings.model": "模型",
