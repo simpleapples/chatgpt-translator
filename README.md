@@ -16,6 +16,7 @@ Left one is the ChatGPT Translator, Right one is the DeepL.
 -   Support multiple languages translation
 -   Support custom shortcut keys
 -   Support macOS, Windows, Linux
+-   Support custom API domain
 
 ## Installation
 

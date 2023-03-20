@@ -16,6 +16,7 @@ ChatGPT Translator 是一个基于 ChatGPT 的开源、跨平台桌面翻译软�
 -   支持多种语言互译
 -   支持自定义快捷键
 -   支持 macOS、Windows、Linux 平台
+-   支持自定义 API 域名
 
 ## 安装
 
