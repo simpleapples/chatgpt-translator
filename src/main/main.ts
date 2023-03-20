@@ -104,7 +104,6 @@ ipcMain.on('translate', async (event, arg) => {
     let status = '';
     let message = '';
     const apiPath = store.get('api_domain') || 'https://api.openai.com';
-    console.log(apiPath);
     const response = (await fetch(
         `${apiPath}/v1/chat/completions`,
         payload
