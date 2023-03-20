@@ -266,11 +266,10 @@ export function Settings(props: {
                             />
                         </FormItem>
                         <FormItem label={t('settings.api_domain')}>
-                            <Input.Password
+                            <Input
                                 placeholder={t<string>(
                                     'settings.api_domain_placeholder'
                                 )}
-                                defaultVisibility={false}
                                 value={apiDomain}
                                 onChange={(value) => {
                                     setAPIDomain(value);
